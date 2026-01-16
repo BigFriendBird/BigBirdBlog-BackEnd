@@ -1,6 +1,6 @@
 # BigBird 博客后端
 
-基于 Spring Boot + MyBatis Plus 的个人博客后端服务。
+基于 Spring Boot + MyBatis的个人博客后端服务。
 
 ## 技术栈
 
