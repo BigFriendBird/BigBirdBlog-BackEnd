@@ -51,3 +51,42 @@ VALUES
  NOW(), 
  NOW(), 
  0);
+
+-- 创建用户表
+CREATE TABLE IF NOT EXISTS `user` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `username` varchar(50) NOT NULL COMMENT '用户名',
+  `password` varchar(100) NOT NULL COMMENT '密码',
+  `nickname` varchar(50) DEFAULT NULL COMMENT '昵称',
+  `email` varchar(100) DEFAULT NULL COMMENT '邮箱',
+  `avatar` varchar(255) DEFAULT NULL COMMENT '头像URL',
+  `role` varchar(20) NOT NULL DEFAULT 'USER' COMMENT '角色：ADMIN-管理员，USER-普通用户',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '状态：0-禁用，1-启用',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint DEFAULT '0' COMMENT '逻辑删除（0-未删除，1-已删除）',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uk_username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';
+
+-- 插入默认管理员账号（密码为 admin123）
+-- 密码加密方式：MD5("bigbird_" + password)
+INSERT INTO `user` (`username`, `password`, `nickname`, `role`, `status`, `create_time`, `update_time`, `deleted`)
+VALUES ('admin', '8e97242e93cfae7de59c3e67a8a3bb00', '管理员', 'ADMIN', 1, NOW(), NOW(), 0);
+
+-- 创建评论表
+CREATE TABLE IF NOT EXISTS `comment` (
+  `id` bigint NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `article_id` bigint NOT NULL COMMENT '文章ID',
+  `user_id` bigint NOT NULL COMMENT '用户ID',
+  `content` text NOT NULL COMMENT '评论内容',
+  `parent_id` bigint DEFAULT NULL COMMENT '父评论ID（用于回复）',
+  `status` tinyint NOT NULL DEFAULT '0' COMMENT '状态：0-待审核，1-已通过，2-已拒绝',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime DEFAULT NULL COMMENT '更新时间',
+  `deleted` tinyint DEFAULT '0' COMMENT '逻辑删除（0-未删除，1-已删除）',
+  PRIMARY KEY (`id`),
+  KEY `idx_article_id` (`article_id`),
+  KEY `idx_user_id` (`user_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='评论表';
+

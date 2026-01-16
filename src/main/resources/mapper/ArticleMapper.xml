@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bigbird.blog.mapper.ArticleMapper">
+
+    <!-- 通用结果映射 -->
+    <resultMap id="BaseResultMap" type="com.bigbird.blog.entity.Article">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="content" property="content"/>
+        <result column="author" property="author"/>
+        <result column="tags" property="tags"/>
+        <result column="views" property="views"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+    </resultMap>
+
+    <!-- 通用查询列 -->
+    <sql id="Base_Column_List">
+        id, title, summary, content, author, tags, views, create_time, update_time, deleted
+    </sql>
+
+    <!-- 查询最新文章 -->
+    <select id="selectLatestArticles" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM article
+        WHERE deleted = 0
+        ORDER BY create_time DESC
+        LIMIT #{limit}
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="selectPage" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM article
+        WHERE deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR summary LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+        ORDER BY create_time DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <!-- 查询总数 -->
+    <select id="selectCount" resultType="long">
+        SELECT COUNT(*)
+        FROM article
+        WHERE deleted = 0
+        <if test="keyword != null and keyword != ''">
+            AND (title LIKE CONCAT('%', #{keyword}, '%') OR summary LIKE CONCAT('%', #{keyword}, '%'))
+        </if>
+    </select>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM article
+        WHERE id = #{id} AND deleted = 0
+    </select>
+
+    <!-- 插入文章 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO article (title, summary, content, author, tags, views, create_time, update_time, deleted)
+        VALUES (#{title}, #{summary}, #{content}, #{author}, #{tags}, #{views}, #{createTime}, #{updateTime}, 0)
+    </insert>
+
+    <!-- 更新文章 -->
+    <update id="updateById">
+        UPDATE article
+        SET title = #{title},
+            summary = #{summary},
+            content = #{content},
+            author = #{author},
+            tags = #{tags},
+            views = #{views},
+            update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 逻辑删除 -->
+    <update id="deleteById">
+        UPDATE article
+        SET deleted = 1
+        WHERE id = #{id}
+    </update>
+
+    <!-- 查询所有 -->
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/>
+        FROM article
+        WHERE deleted = 0
+    </select>
+
+</mapper>
