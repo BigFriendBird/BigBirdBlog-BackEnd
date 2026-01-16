@@ -1,6 +1,5 @@
 package com.bigbird.blog.controller;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.bigbird.blog.common.Result;
 import com.bigbird.blog.entity.Article;
 import com.bigbird.blog.service.ArticleService;
@@ -8,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/articles")
@@ -30,11 +30,11 @@ public class ArticleController {
      * 分页查询文章
      */
     @GetMapping
-    public Result<Page<Article>> getArticlePage(
+    public Result<Map<String, Object>> getArticlePage(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String keyword) {
-        Page<Article> articlePage = articleService.getArticlePage(page, size, keyword);
+        Map<String, Object> articlePage = articleService.getArticlePage(page, size, keyword);
         return Result.success(articlePage);
     }
 
